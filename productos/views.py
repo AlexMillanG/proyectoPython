@@ -1,5 +1,5 @@
 import json
-
+from django.shortcuts import get_object_or_404
 from django.shortcuts import render, redirect
 from .models import Producto
 
@@ -39,7 +39,6 @@ def agregar_producto(request):
         form = productoForm()
     return render(request,'agregar.html',{'form':form})
 
-
 # Función que agrega un producto con un objeto JSON
 def registrar_producto(request):
     # Checar si nuestra request es de tipo POST
@@ -65,3 +64,19 @@ def registrar_producto(request):
 
     # Si no es POST el request...
     return JsonResponse({'error': 'El método no está soportado'}, status=405)
+
+def actualizar_producto(request, id_producto):
+    if request.method=='PUT':
+        producto= get_object_or_404(Producto, id=id_producto)
+        try:
+            #La informacion de la modificacion del producto viene del body del rewquest
+            data = json.loads(request.body)
+            producto.nombre=data.get('nombre', producto.nombre)
+            producto.precio=data.get('precio', producto.precio)
+            producto.imagen=data.get('imagen', producto.imagen)
+            producto.save()
+            return JsonResponse({'mensaje': 'Producto actuaalizado correctamente '}, status=200)
+        except Exception as e:
+            return JsonResponse({'error':str(e)}, status=400)
+    return JsonResponse ({'error':'Metodo no soportado'}, status=405)
+
