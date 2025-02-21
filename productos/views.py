@@ -65,6 +65,7 @@ def registrar_producto(request):
     # Si no es POST el request...
     return JsonResponse({'error': 'El método no está soportado'}, status=405)
 
+#eliminar producto
 def actualizar_producto(request, id_producto):
     if request.method=='PUT':
         producto= get_object_or_404(Producto, id=id_producto)
@@ -80,3 +81,26 @@ def actualizar_producto(request, id_producto):
             return JsonResponse({'error':str(e)}, status=400)
     return JsonResponse ({'error':'Metodo no soportado'}, status=405)
 
+
+#findOne
+def obtener_producto(request, id_producto):
+    if request.method == 'GET':
+        producto = get_object_or_404(Producto, id=id_producto)
+        data = {
+            'nombre': producto.nombre,
+            'precio': producto.precio,
+            'imagen': producto.imagen
+        }
+        return JsonResponse(data, status=200)
+
+    return JsonResponse({'error': 'Método no soportado'}, status=405)
+
+
+#Delete
+def eliminar_producto(request, id_producto):
+    if request.method == 'DELETE':
+        producto = get_object_or_404(Producto, id=id_producto)
+        producto.delete()
+        return JsonResponse({'mensaje': 'Producto eliminado correctamente'}, status=200)
+
+    return JsonResponse({'error': 'Método no soportado'}, status=405)
