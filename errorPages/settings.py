@@ -44,7 +44,10 @@ INSTALLED_APPS = [
     'app',
     'users',
     'productos',
-    'categorias'
+    'categorias',
+    'rest_framework',
+    'alumnos'
+
 ]
 
 MIDDLEWARE = [
