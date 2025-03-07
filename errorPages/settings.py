@@ -46,9 +46,21 @@ INSTALLED_APPS = [
     'productos',
     'categorias',
     'rest_framework',
-    'alumnos'
+    'alumnos',
+    'rest_framework_simplejwt'
 
 ]
+
+
+REST_FRAMEWORK={
+    'DEFAULT_AUTHENTICATION_CLASSES':{
+        'rest_framework_simplejwt.authentication.JWTAuthentitcation',
+    }
+}
+
+
+AUTH_USER_MODEL= 'users.CustomUser'
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

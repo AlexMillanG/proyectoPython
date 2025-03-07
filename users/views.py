@@ -1,43 +1,32 @@
-from django.shortcuts import render, redirect
-from django.contrib.auth import login, logout
-from .forms import CustomUserCreationForm, CustomLoginForm
-from django.contrib.auth.decorators import login_required
-import json
-from .messages import message as Message
+from rest_framework import viewsets
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.renderers import JSONRenderer
+from rest_framework_simplejwt.authentication import JWTAuthentication
 
-def register_view(request):
-    if request.method == 'POST':
-        form = CustomUserCreationForm(request.POST)
-        if form.is_valid():
-            user = form.save()
-            login(request, user)  # Iniciar sesión después del registro
-            return redirect('home')  # Redirigir a la página principal
-    else:
-        form = CustomUserCreationForm()
-    return render(request, 'register.html', {'form': form})
+from .serializers import CustomUserSerializer
+from .models import CustomUser
 
-def login_view(request):
-    if request.method == 'POST':
-        form = CustomLoginForm(data=request.POST)
-        if form.is_valid():
-            user = form.get_user()
-            login(request, user)
-            return redirect('home')
-    else:
-        form = CustomLoginForm()
-    return render(request, 'login.html', {'form': form})
+# Vista API REST
+class UserViewSets(viewsets.ModelViewSet):  # Corregido aquí
+    # Variables
+    queryset = CustomUser.objects.all()
+    serializer_class = CustomUserSerializer
+    renderer_classes = [JSONRenderer]
 
-def logout_view(request):
-    logout(request)
-    message = Message(
-        "info",
-        "Se ha cerrado sesión exitosamente",
-        200,
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR8MIbugIhZBykSmQcR0QPcfnPUBOZQ6bm35w&s"
-    )
-    return render(request, "login.html", {"message": json.dumps(message.to_dict())})
+    # En caso de agregar seguridad
+    # con las siguientes variables
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
 
+    # Qué métodos hay que proteger
+    def get_permissions(self):
+        if self.request.method in ['POST', 'PUT', 'PATCH', 'DELETE']:
+            return [IsAuthenticated()]
+        return []
 
-@login_required
-def home_view(request):
-    return render(request, 'home.html')
+# Vista que devuelva token
+from rest_framework_simplejwt.views import TokenObtainPairView
+from .serializers import CustomTokenObtainPairSerializer
+
+class CustomTokenObtainPairView(TokenObtainPairView):  # Corregido aquí
+    serializer_class = CustomTokenObtainPairSerializer

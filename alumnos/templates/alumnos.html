@@ -15,23 +15,90 @@
         <!-- Columna para el formulario -->
         <div class="col-md-6">
             <div class="card shadow-sm p-4">
-                <form method="post">
+                <form method="post" id="alumnoForm">
                     {% csrf_token %}
+                    <input type="hidden" id="id" name="id">
                     <div class="mb-3">
-                        {{ form.as_p }}
+                        <label for="nombre" class="form-label">Nombre</label>
+                        <input type="text" id="nombre" name="nombre" class="form-control">
+                    </div>
+                    <div class="mb-3">
+                        <label for="apellido" class="form-label">Apellido</label>
+                        <input type="text" id="apellido" name="apellido" class="form-control">
+                    </div>
+                    <div class="mb-3">
+                        <label for="edad" class="form-label">Edad</label>
+                        <input type="number" id="edad" name="edad" class="form-control">
+                    </div>
+                    <div class="mb-3">
+                        <label for="correo" class="form-label">Correo</label>
+                        <input type="email" id="correo" name="correo" class="form-control">
+                    </div>
+                    <div class="mb-3">
+                        <label for="matricula" class="form-label">Matrícula</label>
+                        <input type="text" id="matricula" name="matricula" class="form-control">
                     </div>
                     <button type="submit" class="btn btn-primary w-100">Enviar</button>
                 </form>
             </div>
         </div>
 
-        <!-- Columna para otro contenido -->
+        <!-- Columna para mostrar alumnos -->
         <div class="col-md-6">
-            <div class="p-4">
-                <!-- Aquí puedes agregar el contenido que irá en el lado derecho -->
+            <div id="alumnos" class="row g-3">
+                <!-- Aquí se mostrarán los datos en tarjetas -->
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    const findAll = async () => {
+        try {
+            let response = await fetch('/alumnos/api/');
+            let data = await response.json();
+
+            const alumnosDiv = document.getElementById('alumnos');
+            alumnosDiv.innerHTML = ""; // Limpiar contenido previo
+
+            data.forEach(alumno => {
+                const card = document.createElement('div');
+                card.classList.add('col-12', 'col-md-6');
+                card.innerHTML = `
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title">${alumno.nombre} ${alumno.apellido}</h5>
+                            <h6 class="card-subtitle mb-2 text-muted">ID: ${alumno.id}</h6>
+                            <p class="card-text">
+                                <strong>Edad:</strong> ${alumno.edad} años<br>
+                                <strong>Correo:</strong> ${alumno.correo}<br>
+                                <strong>Matrícula:</strong> ${alumno.matricula}
+                            </p>
+                            <button class="btn btn-warning btn-sm w-100" onclick="llenarFormulario(${alumno.id}, '${alumno.nombre}', '${alumno.apellido}', ${alumno.edad}, '${alumno.correo}', '${alumno.matricula}')">
+                                Editar
+                            </button>
+                        </div>
+                    </div>
+                `;
+                alumnosDiv.appendChild(card);
+            });
+
+        } catch (error) {
+            console.error('Error al obtener los datos:', error);
+        }
+    };
+
+    const llenarFormulario = (id, nombre, apellido, edad, correo, matricula) => {
+        document.getElementById('id').value = id;
+        document.getElementById('nombre').value = nombre;
+        document.getElementById('apellido').value = apellido;
+        document.getElementById('edad').value = edad;
+        document.getElementById('correo').value = correo;
+        document.getElementById('matricula').value = matricula;
+    };
+
+    findAll();
+</script>
+
 </body>
 </html>

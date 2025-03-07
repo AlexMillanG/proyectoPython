@@ -9,8 +9,58 @@
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
+
+    <style>
+        @keyframes taperFade {
+            from{
+                opacity: 0;/* no se ve */
+            }
+            to{
+                opacity: 1;/*  se ve 👍*/
+            }
+        }
+
+        @keyframes slide {
+            from{
+                transform: translateX(100%);
+            }
+            to{
+                transform: translateX(0);
+
+            }
+        }
+
+
+        @keyframes zoomIn {
+            from{
+                transform: scale(0.8);
+            }
+            to{
+                transform: scale(1.0);
+
+            }
+        }
+
+
+        @keyframes zoomOut {
+            from{
+                transform: scale(1.0);
+            }
+            to{
+                transform: scale(0.8);
+
+            }
+        }
+
+
+        .page{
+            animation: taperFade 5.0s forwards;
+        }
+
+
+    </style>
 </head>
-<body>
+<body class="page">
 
 <div class="container">
     <div class="col">
@@ -26,7 +76,6 @@
                     </form>
 
                     <p id="mensaje"></p>
-                    <a href="{% url 'ver' %}">volver</a>
 
                 <div class="col-6 mt-4">
                     <h1>Vista productos</h1>
@@ -37,10 +86,22 @@
         </div>
     </div>
 </div>
+<a href="https://www.utez.edu.mx">Salir de la fakin pagina</a>
 
 
+<script>
+    document.querySelectorAll('a').forEach(link =>{
+        link.addEventListener('click',function (event){
+            event.preventDefault()
+            document.body.style.animation = 'zoomOut 0.5s forwards'
+            setTimeout(()=>{
+                window.location.href = this.href
+            },5000)
 
+        })
+    })
 
+</script>
 
 <script>
      var form = document.getElementById("productoForm");
